@@ -78,16 +78,19 @@
 
 
 
-
-
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors'); // Optional: Enable CORS if you're making requests from another origin
+
+require('dotenv').config();
+const app = express();
+const port = process.env.PORT || 8070; // Use environment variable for deployment
+
+// Enable JSON body parsing
+app.use(express.json());
 
 // Replace with your MongoDB Atlas connection string
-const MONGODB_CONNECT_URI = 'mongodb+srv://nizarmasadeh2001:nizaR123@users.dbgaj.mongodb.net/?retryWrites=true&w=majority&appName=users';
-
-const app = express();
-const port = process.env.PORT || 8080; // Use environment variable for deployment
+const MONGODB_CONNECT_URI = process.env.MONGODB_CONNECT_URI;
 
 mongoose.connect(MONGODB_CONNECT_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected!'))
@@ -95,12 +98,25 @@ mongoose.connect(MONGODB_CONNECT_URI, { useNewUrlParser: true, useUnifiedTopolog
 
 // Define a simple schema for your data
 const userSchema = new mongoose.Schema({
-    name: String,
-    email: String
+    name: { type: String, required: true }, // Set as required
+    email: { type: String, required: true } // Set as required
 });
 
 // Create a model based on the schema
-const User = mongoose.model('usersdb', userSchema);
+const User = mongoose.model('usersdb', userSchema); // Use a singular model name
+
+// Define a POST API route to create a user
+app.post('/users', async (req, res) => {
+    const { username, email, password } = req.body;
+    const user = new User({ username, email, password });
+    try {
+        await user.save();
+        res.status(201).json(user); // Send the created user data
+    } catch (err) {
+        console.error('Error saving user:', err);
+        res.status(500).send({ message: 'Error saving user' });
+    }
+});
 
 // Define a GET API route to fetch all users
 app.get('/users', async (req, res) => {
