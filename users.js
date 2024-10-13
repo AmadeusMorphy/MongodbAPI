@@ -84,12 +84,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 // Replace with your MongoDB Atlas connection string
-const MONGO_URI = 'mongodb+srv://nizarmasadeh2001:nizaR123@users.dbgaj.mongodb.net/?retryWrites=true&w=majority&appName=users';
+const MONGODB_CONNECT_URI = 'mongodb+srv://nizarmasadeh2001:nizaR123@users.dbgaj.mongodb.net/?retryWrites=true&w=majority&appName=users';
 
 const app = express();
 const port = process.env.PORT || 8080; // Use environment variable for deployment
 
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(MONGODB_CONNECT_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected!'))
     .catch(err => console.error('MongoDB connection error:', err));
 
