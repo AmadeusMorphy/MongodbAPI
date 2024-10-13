@@ -3,7 +3,7 @@
     "name": "mongodb-api",
     "builds": [
       {
-        "src": "api/index.js",
+        "src": "api/users.js",
         "use": "@vercel/node"
       }
     ]
