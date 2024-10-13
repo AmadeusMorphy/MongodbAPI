@@ -11,8 +11,5 @@
             "src": "/api/users",
             "dest": "users.js"
         }
-    ],
-    "env": {
-        "MONGODB_CONNECT_URI": "mongodb+srv://nizarmasadeh2001:nizaR123@users.dbgaj.mongodb.net/?retryWrites=true&w=majority&appName=users"
-    }
+    ]
 }

@@ -80,14 +80,15 @@
 
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); // Optional: Enable CORS if you're making requests from another origin
+const cors = require('cors'); // Enable CORS if you're making requests from another origin
 
-require('dotenv').config();
-const app = express();
+require('dotenv').config(); // Load environment variables
+const app = express(); // Initialize the Express app
 const port = process.env.PORT || 8070; // Use environment variable for deployment
 
 // Enable JSON body parsing
 app.use(express.json());
+app.use(cors()); // Move this after initializing the app
 
 // Replace with your MongoDB Atlas connection string
 const MONGODB_CONNECT_URI = process.env.MONGODB_CONNECT_URI;
@@ -107,8 +108,8 @@ const User = mongoose.model('usersdb', userSchema); // Use a singular model name
 
 // Define a POST API route to create a user
 app.post('/users', async (req, res) => {
-    const { username, email, password } = req.body;
-    const user = new User({ username, email, password });
+    const { name, email } = req.body; // Updated destructuring to match the schema
+    const user = new User({ name, email }); // Create a new user with the correct field names
     try {
         await user.save();
         res.status(201).json(user); // Send the created user data
@@ -130,4 +131,3 @@ app.get('/users', async (req, res) => {
 });
 
 app.listen(port, () => console.log(`Server listening on port ${port}`));
-
