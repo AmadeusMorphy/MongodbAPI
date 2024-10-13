@@ -104,13 +104,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Handle 404 for unmatched routes
-app.use((req, res) => {
-    res.status(404).send({ message: 'Not Found' });
-  });
-  
-  app.get('/', (req, res) => {
-    res.send('API is working!');
-});
+
 
 // Create a model based on the schema
 const User = mongoose.model('usersdb', userSchema); // Use a singular model name
@@ -140,3 +134,11 @@ app.get('/users', async (req, res) => {
 });
 
 app.listen(port, () => console.log(`Server listening on port ${port}`));
+
+app.use((req, res) => {
+    res.status(404).send({ message: 'Not Found' });
+  });
+  
+  app.get('/', (req, res) => {
+    res.send('API is working!');
+});
