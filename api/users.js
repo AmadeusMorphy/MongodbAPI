@@ -3,72 +3,55 @@
 
 
 
-const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 
-// Replace with your MongoDB Atlas connection string
+// MongoDB connection string
 const MONGO_URI = 'mongodb+srv://nizarmasadeh2001:nizaR123@users.dbgaj.mongodb.net/?retryWrites=true&w=majority&appName=users';
 
-const app = express();
-const port = process.env.PORT || 3000; // Use environment variable for deployment
-
-// Middleware to parse JSON bodies
-app.use(bodyParser.json());
-
+// Connect to MongoDB Atlas
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected!'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-// Define a schema with username, email, and password
+// Define a simple schema for your data
 const userSchema = new mongoose.Schema({
-    username: { type: String, required: true },
-    email: { type: String, required: true },
-    password: { type: String, required: true }
+    name: String,
+    email: String,
+    password: String
 });
 
 // Create a model based on the schema
 const User = mongoose.model('usersdb', userSchema);
 
-// Define a POST API route to create new users
-app.post('/api/users', async (req, res) => {
-    try {
-        const { username, email, password } = req.body;
-
-        // Validate request body
-        if (!username || !email || !password) {
-            return res.status(400).send({ message: 'Username, email, and password are required.' });
+// The handler function for Vercel
+module.exports = async (req, res) => {
+    if (req.method === 'GET') {
+        try {
+            const users = await User.find();
+            res.status(200).json(users); // Send the fetched users data
+        } catch (err) {
+            console.error('Error fetching users:', err);
+            res.status(500).send({ message: 'Error fetching users' });
+        }
+    } else if (req.method === 'POST') {
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).send({ message: 'All fields are required' });
         }
 
-        // Create a new user object
-        const newUser = new User({
-            username,
-            email,
-            password // In a real app, you should hash passwords before saving
-        });
-
-        // Save the new user to the database
-        await newUser.save();
-
-        res.status(201).send({ message: 'User created successfully!' });
-    } catch (err) {
-        console.error('Error creating user:', err);
-        res.status(500).send({ message: 'Error creating user' });
+        const user = new User({ name, email, password });
+        try {
+            await user.save();
+            res.status(201).send({ message: 'User created successfully' });
+        } catch (err) {
+            console.error('Error creating user:', err);
+            res.status(500).send({ message: 'Error creating user' });
+        }
+    } else {
+        res.status(405).send({ message: 'Method Not Allowed' });
     }
-});
+};
 
-// Define a GET API route to fetch all users
-app.get('/api/users', async (req, res) => {
-    try {
-        const users = await User.find();
-        res.json(users); // Send the fetched users data
-    } catch (err) {
-        console.error('Error fetching users:', err);
-        res.status(500).send({ message: 'Error fetching users' });
-    }
-});
-
-app.listen(port, () => console.log(`Server listening on port ${port}`));
 
 
 
