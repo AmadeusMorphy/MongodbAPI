@@ -103,6 +103,12 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true } // Set as required
 });
 
+// Handle 404 for unmatched routes
+app.use((req, res) => {
+    res.status(404).send({ message: 'Not Found' });
+  });
+  
+
 // Create a model based on the schema
 const User = mongoose.model('usersdb', userSchema); // Use a singular model name
 
